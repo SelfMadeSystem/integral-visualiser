@@ -3,10 +3,22 @@ import * as d3 from "d3";
 import { IntegralCalculator } from "./integral-calc";
 
 const container = document.getElementById("container")!;
+const functionInput = document.getElementById("function") as HTMLInputElement;
+const rangeMinInput = document.getElementById("range-min") as HTMLInputElement;
+const rangeMaxInput = document.getElementById("range-max") as HTMLInputElement;
+const domainMinInput = document.getElementById(
+  "domain-min"
+) as HTMLInputElement;
+const domainMaxInput = document.getElementById(
+  "domain-max"
+) as HTMLInputElement;
+const nInput = document.getElementById("steps") as HTMLInputElement;
 
-const domain = [-10, 10];
-const range = [-2, 2];
-const n = 1000;
+rangeMinInput.value = "-2";
+rangeMaxInput.value = "2";
+domainMinInput.value = "-10";
+domainMaxInput.value = "10";
+nInput.value = "1000";
 
 // Declare the chart dimensions and margins.
 const width = 640;
@@ -16,19 +28,24 @@ const marginRight = 20;
 const marginBottom = 30;
 const marginLeft = 40;
 
-// Declare the x (horizontal position) scale.
-const x = d3
-  .scaleLinear()
-  .domain(domain)
-  .range([marginLeft, width - marginRight]);
+function plotStuff(
+  f: (x: number) => number,
+  domain: readonly [number, number],
+  range: readonly [number, number],
+  n: number
+) {
+  // Declare the x (horizontal position) scale.
+  const x = d3
+    .scaleLinear()
+    .domain(domain)
+    .range([marginLeft, width - marginRight]);
 
-// Declare the y (vertical position) scale.
-const y = d3
-  .scaleLinear()
-  .domain(range)
-  .range([height - marginBottom, marginTop]);
+  // Declare the y (vertical position) scale.
+  const y = d3
+    .scaleLinear()
+    .domain(range)
+    .range([height - marginBottom, marginTop]);
 
-function plotStuff(f: (x: number) => number) {
   // Create the integral calculator.
   const calc = new IntegralCalculator(f);
 
@@ -84,8 +101,6 @@ function plotStuff(f: (x: number) => number) {
   container.append(svg.node()!);
 }
 
-const functionInput = document.getElementById("function") as HTMLInputElement;
-
 functionInput.value = "abs(mod((x + 2), 4) - 2) - 1";
 
 const context: Record<string, any> = {
@@ -98,13 +113,23 @@ for (const key of Object.getOwnPropertyNames(Math)) {
 
 function handleFunctionInput() {
   try {
+    const domain = [
+      domainMinInput.valueAsNumber,
+      domainMaxInput.valueAsNumber,
+    ] as const;
+    const range = [
+      rangeMinInput.valueAsNumber,
+      rangeMaxInput.valueAsNumber,
+    ] as const;
+    const n = nInput.valueAsNumber;
+
     const functionBody = `with (context) { return ${functionInput.value}; }`;
     const f = new Function("x", "context", functionBody) as (
       x: number,
       context: any
     ) => number;
 
-    plotStuff((x) => f(x, context));
+    plotStuff((x) => f(x, context), domain, range, n);
   } catch (e) {
     console.error(e);
   }
@@ -113,3 +138,8 @@ function handleFunctionInput() {
 handleFunctionInput();
 
 functionInput.addEventListener("input", handleFunctionInput);
+rangeMinInput.addEventListener("input", handleFunctionInput);
+rangeMaxInput.addEventListener("input", handleFunctionInput);
+domainMinInput.addEventListener("input", handleFunctionInput);
+domainMaxInput.addEventListener("input", handleFunctionInput);
+nInput.addEventListener("input", handleFunctionInput);

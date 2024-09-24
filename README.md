@@ -14,7 +14,7 @@ Desmos seems to calculate the integral by assuming each "line" of the function g
 
 ## Limitations
 
-The plotter is not perfect. It doesn't seem to work when the lower bound of the domain is not 0. This is because I am lazy and didn't want to implement a way to calculate the integral from a different lower bound.
+The shown integral always starts at 0 on the left side of the plot. I'm sure you can imagine why.
 
 ## How to use
 
