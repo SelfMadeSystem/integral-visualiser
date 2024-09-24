@@ -7,27 +7,35 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <div class="flex flex-col mx-auto">
-      <div class="mx-auto">
-        <label for="function">Enter a function (raw JS):</label>
+    <div class="flex flex-col mx-auto items-center">
+      <div class="flex flex-col items-center">
+        <label for="function" class="font-bold">Enter a function (raw JS):</label>
         <input id="function" type="text" />
       </div>
-      <div class="flex flex-col">
-        <span class="font-bold mx-auto">Range:</span>
-        <div class="flex flex-row mx-auto">
-          <label for="range-min">Min:</label>
-          <input id="range-min" type="number" />
-          <label for="range-max">Max:</label>
-          <input id="range-max" type="number" />
+      <div class="flex flex-col items-center">
+        <span class="font-bold">Range:</span>
+        <div class="flex flex-row gap-4">
+          <div>
+            <label for="range-min">Min:</label>
+            <input id="range-min" type="number" />
+          </div>
+          <div>
+            <label for="range-max">Max:</label>
+            <input id="range-max" type="number" />
+          </div>
         </div>
       </div>
-      <div class="flex flex-col">
-        <span class="font-bold mx-auto">Domain:</span>
-        <div class="flex flex-row mx-auto">
-          <label for="domain-min">Min:</label>
-          <input id="domain-min" type="number" />
-          <label for="domain-max">Max:</label>
-          <input id="domain-max" type="number" />
+      <div class="flex flex-col items-center">
+        <span class="font-bold">Domain:</span>
+        <div class="flex flex-row gap-4">
+          <div>
+            <label for="domain-min">Min:</label>
+            <input id="domain-min" type="number" />
+          </div>
+          <div>
+            <label for="domain-max">Max:</label>
+            <input id="domain-max" type="number" />
+          </div>
         </div>
       </div>
       <div class="mx-auto">

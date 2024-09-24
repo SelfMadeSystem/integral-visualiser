@@ -65,16 +65,58 @@ function plotStuff(
   const svg = d3.create("svg").attr("width", width).attr("height", height);
 
   // Add the x-axis.
+  const xAxis = d3.axisBottom(x);
   svg
     .append("g")
     .attr("transform", `translate(0,${height - marginBottom})`)
-    .call(d3.axisBottom(x));
+    .call(xAxis);
 
   // Add the y-axis.
+  const yAxis = d3.axisLeft(y);
   svg
     .append("g")
     .attr("transform", `translate(${marginLeft},0)`)
-    .call(d3.axisLeft(y));
+    .call(yAxis);
+
+  // Add the x-axis grid lines.
+  svg
+    .append("g")
+    .attr("class", "d3-grid")
+    .attr("transform", `translate(0,${height - marginBottom})`)
+    .call(
+      xAxis.tickSize(-height + marginTop + marginBottom).tickFormat(() => "")
+    );
+
+  // Add the y-axis grid lines.
+  svg
+    .append("g")
+    .attr("class", "d3-grid")
+    .attr("transform", `translate(${marginLeft},0)`)
+    .call(
+      yAxis.tickSize(-width + marginLeft + marginRight).tickFormat(() => "")
+    );
+
+  // Add vertical line at x = 0
+  svg
+    .append("line")
+    .attr("x1", x(0))
+    .attr("y1", y(range[0]))
+    .attr("x2", x(0))
+    .attr("y2", y(range[1]))
+    .attr("stroke", "currentColor")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "4");
+
+  // Add horizontal line at y = 0
+  svg
+    .append("line")
+    .attr("x1", x(domain[0]))
+    .attr("y1", y(0))
+    .attr("x2", x(domain[1]))
+    .attr("y2", y(0))
+    .attr("stroke", "currentColor")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "4");
 
   // Add the function plot.
   svg
