@@ -48,3 +48,7 @@ input[type="text"] {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.25rem;
 }
+
+.error {
+  color: #fd6464;
+}

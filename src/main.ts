@@ -13,6 +13,7 @@ const domainMaxInput = document.getElementById(
   "domain-max"
 ) as HTMLInputElement;
 const nInput = document.getElementById("steps") as HTMLInputElement;
+const errorOutput = document.getElementById("error") as HTMLDivElement;
 
 rangeMinInput.value = "-2";
 rangeMaxInput.value = "2";
@@ -73,10 +74,7 @@ function plotStuff(
 
   // Add the y-axis.
   const yAxis = d3.axisLeft(y);
-  svg
-    .append("g")
-    .attr("transform", `translate(${marginLeft},0)`)
-    .call(yAxis);
+  svg.append("g").attr("transform", `translate(${marginLeft},0)`).call(yAxis);
 
   // Add the x-axis grid lines.
   svg
@@ -154,10 +152,9 @@ function plotStuff(
     .attr("fill", "currentColor")
     .style("text-anchor", "middle")
     .text("f(x)");
-
   // Find last defined value of f(x) and integral.
   let lastDefinedi = fData.length - 1;
-  
+
   for (let i = fData.length - 1; i >= 0; i--) {
     if (isFinite(fData[i].y)) {
       lastDefinedi = i;
@@ -166,12 +163,22 @@ function plotStuff(
   }
 
   const ldX = x(fData[lastDefinedi].x);
+  const y1 = context.clamp(y(fData[lastDefinedi].y), 15, height - 15);
+  const y2 = context.clamp(y(integralData[lastDefinedi].y), 15, height - 15);
+
+  // Check if the labels overlap and adjust if necessary
+  const threshold = 20; // Minimum distance between labels
+  let adjustedY2 = y2;
+
+  if (Math.abs(y1 - y2) < threshold) {
+    adjustedY2 = y1 > y2 ? y2 - threshold : y2 + threshold;
+  }
 
   // Add the function label.
   svg
     .append("text")
     .attr("x", ldX)
-    .attr("y", y(fData[lastDefinedi].y))
+    .attr("y", y1)
     .style("text-anchor", "end")
     .attr("fill", "steelblue")
     .text("f(x)");
@@ -180,11 +187,10 @@ function plotStuff(
   svg
     .append("text")
     .attr("x", ldX)
-    .attr("y", y(integralData[lastDefinedi].y))
+    .attr("y", adjustedY2)
     .style("text-anchor", "end")
     .attr("fill", "orange")
     .text("∫ f(x) dx");
-
   // Remove the old SVG element.
   container.innerHTML = "";
 
@@ -196,6 +202,9 @@ functionInput.value = "abs(mod((x + 2), 4) - 2) - 1";
 
 const context: Record<string, any> = {
   mod: (a: number, b: number) => ((a % b) + b) % b,
+  clamp: (x: number, min: number, max: number) =>
+    Math.min(Math.max(x, min), max),
+  ln: Math.log,
 };
 
 for (const key of Object.getOwnPropertyNames(Math)) {
@@ -203,6 +212,7 @@ for (const key of Object.getOwnPropertyNames(Math)) {
 }
 
 function handleFunctionInput() {
+  errorOutput.textContent = "";
   try {
     const domain = [
       domainMinInput.valueAsNumber,
@@ -215,14 +225,35 @@ function handleFunctionInput() {
     const n = nInput.valueAsNumber;
 
     const functionBody = `with (context) { return ${functionInput.value}; }`;
-    const f = new Function("x", "context", functionBody) as (
+    const func = new Function("x", "context", functionBody) as (
       x: number,
       context: any
     ) => number;
 
-    plotStuff((x) => f(x, context), domain, range, n);
+    const f = (x: number) => {
+      try {
+        const y = func(x, context);
+        if (typeof y !== "number") {
+          throw new Error(`Invalid output: ${y}`);
+        }
+        return y;
+      } catch (e) {
+        throw new Error(`Error evaluating function at x = ${x}: ${e}`);
+      }
+    }
+
+    plotStuff(f, domain, range, n);
   } catch (e) {
     console.error(e);
+    let message = "Unknown error";
+
+    if (e instanceof Error) {
+      message = e.message;
+    } else if (typeof e === "string") {
+      message = e;
+    }
+
+    errorOutput.textContent = message;
   }
 }
 
