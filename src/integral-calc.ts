@@ -15,7 +15,10 @@ export class IntegralCalculator {
     const h = (b - a) / n;
     let sum = 0;
     for (let i = 0; i < n; i++) {
-      sum += this.f(a + i * h) * h;
+      const amnt = this.f(a + i * h) * h;
+      if (isFinite(amnt)) {
+        sum += amnt;
+      }
     }
     return sum;
   }
@@ -31,13 +34,18 @@ export class IntegralCalculator {
     const h = (b - a) / n;
     const data = [];
     for (let i = 0; i <= n; i++) {
-      data.push({ x: a + i * h, y: this.f(a + i * h) });
+      const y = this.f(a + i * h);
+      if (isFinite(y)) {
+        data.push({ x: a + i * h, y });
+      }
     }
     return data;
   }
 
   /**
    * Generates a list of points that can be used to plot the integral of the function f(x) over the interval [a, b].
+   *
+   * Optionally limits the range of the integral plot.
    */
   generateIntegralPlotData(
     a: number,
@@ -48,8 +56,12 @@ export class IntegralCalculator {
     const data = [];
     let sum = 0;
     for (let i = 0; i <= n; i++) {
-      sum += this.f(a + i * h) * h;
-      data.push({ x: a + i * h, y: sum });
+      const amnt = this.f(a + i * h) * h;
+      if (isFinite(amnt)) {
+        sum += amnt;
+        console.log(sum);
+        data.push({ x: a + i * h, y: sum });
+      }
     }
     return data;
   }

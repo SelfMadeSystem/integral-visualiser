@@ -94,6 +94,43 @@ function plotStuff(
     .attr("stroke-width", 1.5)
     .attr("d", line);
 
+  // Add x-axis label.
+  svg
+    .append("text")
+    .attr("x", width / 2)
+    .attr("y", height - 5)
+    .attr("fill", "currentColor")
+    .style("text-anchor", "middle")
+    .text("x");
+
+  // Add y-axis label.
+  svg
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", 15)
+    .attr("fill", "currentColor")
+    .style("text-anchor", "middle")
+    .text("f(x)");
+
+  // Add the function label.
+  svg
+    .append("text")
+    .attr("x", width - 5)
+    .attr("y", y(f(domain[1])) - 5)
+    .style("text-anchor", "end")
+    .attr("fill", "steelblue")
+    .text("f(x)");
+
+  // Add the integral label.
+  svg
+    .append("text")
+    .attr("x", width - 5)
+    .attr("y", y(integralData[integralData.length - 1].y) - 5)
+    .style("text-anchor", "end")
+    .attr("fill", "orange")
+    .text("∫ f(x) dx");
+
   // Remove the old SVG element.
   container.innerHTML = "";
 
