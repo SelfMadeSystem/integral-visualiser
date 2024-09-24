@@ -155,11 +155,23 @@ function plotStuff(
     .style("text-anchor", "middle")
     .text("f(x)");
 
+  // Find last defined value of f(x) and integral.
+  let lastDefinedi = fData.length - 1;
+  
+  for (let i = fData.length - 1; i >= 0; i--) {
+    if (isFinite(fData[i].y)) {
+      lastDefinedi = i;
+      break;
+    }
+  }
+
+  const ldX = x(fData[lastDefinedi].x);
+
   // Add the function label.
   svg
     .append("text")
-    .attr("x", width - 5)
-    .attr("y", y(f(domain[1])) - 5)
+    .attr("x", ldX)
+    .attr("y", y(fData[lastDefinedi].y))
     .style("text-anchor", "end")
     .attr("fill", "steelblue")
     .text("f(x)");
@@ -167,8 +179,8 @@ function plotStuff(
   // Add the integral label.
   svg
     .append("text")
-    .attr("x", width - 5)
-    .attr("y", y(integralData[integralData.length - 1].y) - 5)
+    .attr("x", ldX)
+    .attr("y", y(integralData[lastDefinedi].y))
     .style("text-anchor", "end")
     .attr("fill", "orange")
     .text("∫ f(x) dx");
