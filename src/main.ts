@@ -4,7 +4,7 @@ import { IntegralCalculator } from "./integral-calc";
 
 const container = document.getElementById("container")!;
 
-const domain = [0, 10];
+const domain = [-10, 10];
 const range = [-2, 2];
 const n = 1000;
 
@@ -86,18 +86,30 @@ function plotStuff(f: (x: number) => number) {
 
 const functionInput = document.getElementById("function") as HTMLInputElement;
 
-functionInput.value = "Math.abs((x + 2) % 4 - 2) - 1";
+functionInput.value = "abs(mod((x + 2), 4) - 2) - 1";
 
-plotStuff((x) => Math.abs((x + 2) % 4 - 2) - 1);
+const context: Record<string, any> = {
+  mod: (a: number, b: number) => ((a % b) + b) % b,
+};
 
-functionInput.addEventListener("input", () => {
+for (const key of Object.getOwnPropertyNames(Math)) {
+  context[key] = Math[key as keyof typeof Math];
+}
+
+function handleFunctionInput() {
   try {
-    const f = new Function("x", `return ${functionInput.value};`) as (
-      x: number
+    const functionBody = `with (context) { return ${functionInput.value}; }`;
+    const f = new Function("x", "context", functionBody) as (
+      x: number,
+      context: any
     ) => number;
 
-    plotStuff(f);
+    plotStuff((x) => f(x, context));
   } catch (e) {
     console.error(e);
   }
-});
+}
+
+handleFunctionInput();
+
+functionInput.addEventListener("input", handleFunctionInput);
