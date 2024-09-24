@@ -230,14 +230,22 @@ function handleFunctionInput() {
       context: any
     ) => number;
 
+    let first = true;
+
     const f = (x: number) => {
       try {
         const y = func(x, context);
         if (typeof y !== "number") {
           throw new Error(`Invalid output: ${y}`);
         }
+        first = false;
         return y;
       } catch (e) {
+        if (first) {
+          first = false;
+          throw e; // if it errors on the first try, it's probably a syntax error
+        }
+        first = false;
         throw new Error(`Error evaluating function at x = ${x}: ${e}`);
       }
     }
